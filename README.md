@@ -1,5 +1,7 @@
 # IaC AI Reviewer
 
+[![CI](https://github.com/mbeni555/iac-ai-reviewer/actions/workflows/ci.yml/badge.svg)](https://github.com/mbeni555/iac-ai-reviewer/actions/workflows/ci.yml)
+
 Pull request reviews for Terraform and Kubernetes stall on check ids. Checkov and Trivy already know that an S3 ACL is public, that `0.0.0.0/0` is on port 22, or that a pod is privileged. They do not say, in the language of the person who opened the pull request, what can happen, how bad it is, and what to change.
 
 IaC AI Reviewer runs those scanners on the files in the pull request, then asks an LLM for that explanation. The model ranks each finding critical, high, medium, or low, with a one-line reason, and suggests a concrete code change. The action posts **one** comment and updates that same comment on the next push.
@@ -102,7 +104,7 @@ If the call fails, the comment still posts and the footer says the model was ski
 
 ## Quick start
 
-The action does not install Checkov or Trivy. Pin them in the workflow so a scanner release cannot change your review overnight. From this repository, `uses: ./` is the action. After you publish a tag, replace that line with `your-org/iac-ai-reviewer@v0.1.0`.
+The action does not install Checkov or Trivy. Pin them in the workflow so a scanner release cannot change your review overnight. From this repository, `uses: ./` is the action. After you publish a tag, replace that line with `mbeni555/iac-ai-reviewer@v0.1.0`.
 
 ```yaml
 name: IaC review
@@ -139,7 +141,7 @@ jobs:
 
 Leave `openai_api_key` unset, or set the secret to an empty value, and the no-key path runs. `scan_mode` defaults to `changed`, which on a pull request reviews Terraform and Kubernetes files the pull request touches. It does not review `.tfvars`.
 
-The self-demo is [`.github/workflows/iac-review-demo.yml`](.github/workflows/iac-review-demo.yml). It scans `examples/` on every pull request, on pushes to `main`, and on `workflow_dispatch`. A later step checks that three files were scanned, that the highest risk is critical, and that `AKIAIOSFODNN7EXAMPLE` is absent from the job summary.
+The self-demo is [`.github/workflows/iac-review-demo.yml`](.github/workflows/iac-review-demo.yml). It scans `examples/` on every pull request, on pushes to `main`, and on `workflow_dispatch`. A later step checks that three files were scanned, that the highest risk is critical, and that `AKIAIOSFODNN7EXAMPLE` is absent from the review markdown. That markdown is what the action writes to the job summary. The check reads the `summary_file` output, because `$GITHUB_STEP_SUMMARY` is a different file in each step and the runner removes the previous one.
 
 Fork pull requests cannot post the comment with the default token. This action does not switch to `pull_request_target`.
 
@@ -177,6 +179,7 @@ Fork pull requests cannot post the comment with the default token. This action d
 | `highest_severity` | Worst risk shown, or `none`. |
 | `used_llm` | `true` when the model produced explanations. |
 | `comment_url` | The created or updated comment. Empty when no comment was posted. |
+| `summary_file` | Path of the review markdown written to the job summary. Empty when `RUNNER_TEMP` is unset. |
 
 ## Privacy
 

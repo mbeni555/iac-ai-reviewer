@@ -102,6 +102,11 @@ outputs:
     description: "true when a model produced the explanations."
   comment_url:
     description: URL of the created or updated comment, when one was posted.
+  summary_file:
+    description: >-
+      Absolute path of the review markdown written to the job summary.
+      Empty when RUNNER_TEMP is unset. A later step cannot read
+      GITHUB_STEP_SUMMARY from this step, so read this file instead.
 
 runs:
   using: node20

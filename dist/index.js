@@ -25321,8 +25321,8 @@ function getOctokit(token, options, ...additionalPlugins) {
 }
 
 // src/run.ts
-var import_promises2 = require("fs/promises");
-var import_path4 = require("path");
+var import_promises3 = require("fs/promises");
+var import_path5 = require("path");
 
 // src/types.ts
 var SEVERITIES = ["critical", "high", "medium", "low"];
@@ -26754,6 +26754,17 @@ async function execJson(bin, args, cwd) {
   }
 }
 
+// src/summary.ts
+var import_promises2 = require("fs/promises");
+var import_path4 = require("path");
+var SUMMARY_FILENAME = "iac-ai-reviewer-summary.md";
+async function writeSummaryCopy(markdown, directory) {
+  if (!directory) return void 0;
+  const path4 = (0, import_path4.join)(directory, SUMMARY_FILENAME);
+  await (0, import_promises2.writeFile)(path4, markdown);
+  return path4;
+}
+
 // src/run.ts
 async function run() {
   try {
@@ -26850,7 +26861,7 @@ async function discover(input) {
         continue;
       }
       if (!isYamlFile(rel) || !isInsideRepo(input.workspace, rel)) continue;
-      const content = await (0, import_promises2.readFile)((0, import_path4.join)(input.workspace, rel), "utf8");
+      const content = await (0, import_promises3.readFile)((0, import_path5.join)(input.workspace, rel), "utf8");
       if (looksLikeKubernetes(content)) selected.push(rel);
     }
     return capFiles(selected, input.maxFiles);
@@ -26880,9 +26891,9 @@ function capFiles(files, maxFiles) {
 async function readWorkspaceFile(workspace, file) {
   if (!isInsideRepo(workspace, file)) return { bytes: 0 };
   try {
-    const info2 = await (0, import_promises2.stat)((0, import_path4.join)(workspace, file));
+    const info2 = await (0, import_promises3.stat)((0, import_path5.join)(workspace, file));
     if (info2.size > MAX_FILE_BYTES) return { bytes: info2.size };
-    return { bytes: info2.size, text: await (0, import_promises2.readFile)((0, import_path4.join)(workspace, file), "utf8") };
+    return { bytes: info2.size, text: await (0, import_promises3.readFile)((0, import_path5.join)(workspace, file), "utf8") };
   } catch {
     return { bytes: 0 };
   }
@@ -26929,6 +26940,8 @@ function actionLogger() {
     setOutput: (name, value) => setOutput(name, value),
     setSecret: (value) => setSecret(value),
     writeSummary: async (markdown) => {
+      const copyPath = await writeSummaryCopy(markdown, process.env.RUNNER_TEMP);
+      if (copyPath) setOutput("summary_file", copyPath);
       if (!process.env.GITHUB_STEP_SUMMARY) return;
       await summary.addRaw(markdown).write();
     }

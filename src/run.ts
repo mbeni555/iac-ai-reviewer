@@ -18,6 +18,7 @@ import {
 } from "./paths";
 import { MAX_FILE_BYTES, type FileSlice } from "./review";
 import { runCheckov, runTrivy } from "./scanners/run";
+import { writeSummaryCopy } from "./summary";
 
 export async function run(): Promise<void> {
   try {
@@ -217,6 +218,8 @@ function actionLogger() {
     setOutput: (name: string, value: string) => core.setOutput(name, value),
     setSecret: (value: string) => core.setSecret(value),
     writeSummary: async (markdown: string) => {
+      const copyPath = await writeSummaryCopy(markdown, process.env.RUNNER_TEMP);
+      if (copyPath) core.setOutput("summary_file", copyPath);
       if (!process.env.GITHUB_STEP_SUMMARY) return;
       await core.summary.addRaw(markdown).write();
     },

@@ -47,8 +47,11 @@ jobs:
           test "${{ steps.review.outputs.files_scanned }}" = "3"
           test "${{ steps.review.outputs.findings_count }}" -gt 0
           test "${{ steps.review.outputs.highest_severity }}" = "critical"
-          grep -q "IaC AI Reviewer" "$GITHUB_STEP_SUMMARY"
-          if grep -q "AKIAIOSFODNN7EXAMPLE" "$GITHUB_STEP_SUMMARY"; then
+          summary="${{ steps.review.outputs.summary_file }}"
+          test -n "$summary"
+          test -s "$summary"
+          grep -q "IaC AI Reviewer" "$summary"
+          if grep -q "AKIAIOSFODNN7EXAMPLE" "$summary"; then
             echo "The dummy access key id was written into the job summary."
             exit 1
           fi
