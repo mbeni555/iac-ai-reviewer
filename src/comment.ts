@@ -66,7 +66,8 @@ export function renderComment(model: CommentModel): string {
   }
 
   const counts = countSeverities(model.findings);
-  lines.push(`**${model.findings.length} findings** in ${fileCount} ${fileWord} · ${scanners}`);
+  const findingWord = model.findings.length === 1 ? "finding" : "findings";
+  lines.push(`**${model.findings.length} ${findingWord}** in ${fileCount} ${fileWord} · ${scanners}`);
   lines.push("");
   lines.push("| Severity | Findings |");
   lines.push("| --- | ---: |");

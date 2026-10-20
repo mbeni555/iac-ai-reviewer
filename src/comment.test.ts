@@ -90,6 +90,8 @@ describe("renderComment", () => {
       partialCount: 0,
     });
     expect(body).toContain(url);
+    expect(body).toContain("**1 finding**");
+    expect(body).not.toContain("**1 findings**");
     expect(body).not.toContain("```hcl\nFollow the scanner guideline");
   });
 

@@ -25641,7 +25641,8 @@ function renderComment(model) {
     return limitComment(lines.join("\n").trim() + "\n");
   }
   const counts = countSeverities(model.findings);
-  lines.push(`**${model.findings.length} findings** in ${fileCount} ${fileWord} \xB7 ${scanners}`);
+  const findingWord = model.findings.length === 1 ? "finding" : "findings";
+  lines.push(`**${model.findings.length} ${findingWord}** in ${fileCount} ${fileWord} \xB7 ${scanners}`);
   lines.push("");
   lines.push("| Severity | Findings |");
   lines.push("| --- | ---: |");
