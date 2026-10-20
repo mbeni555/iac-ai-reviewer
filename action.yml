@@ -1,0 +1,108 @@
+name: IaC AI Reviewer
+description: >-
+  Review changed Terraform and Kubernetes files with Checkov and Trivy, then
+  explain each finding in plain English. Posts one pull request comment and
+  updates it on re-runs. Works with no LLM key.
+author: IaC AI Reviewer contributors
+
+branding:
+  icon: shield
+  color: blue
+
+inputs:
+  scanners:
+    description: Comma-separated scanners to run. Supported values are checkov and trivy.
+    required: false
+    default: checkov,trivy
+  scan_mode:
+    description: >-
+      changed scans files touched by the pull request. all scans every in-scope
+      Terraform and Kubernetes file under paths.
+    required: false
+    default: changed
+  paths:
+    description: >-
+      Comma-separated path prefixes to include. Empty means the whole repository,
+      still filtered to Terraform and Kubernetes files.
+    required: false
+    default: ""
+  openai_api_key:
+    description: >-
+      API key for an OpenAI-compatible chat completions endpoint. Leave empty to
+      post scanner findings without calling a model.
+    required: false
+    default: ""
+  openai_base_url:
+    description: OpenAI-compatible API root, for example https://api.openai.com/v1.
+    required: false
+    default: https://api.openai.com/v1
+  openai_model:
+    description: Model name sent to the chat completions endpoint.
+    required: false
+    default: gpt-4o-mini
+  openai_json_mode:
+    description: >-
+      Request response_format json_object. Set false for compatible servers that
+      reject JSON mode. A 400 from JSON mode is retried once without it.
+    required: false
+    default: "true"
+  max_findings:
+    description: Maximum findings to include. Highest baseline risk is kept.
+    required: false
+    default: "30"
+  max_explained:
+    description: How many of those findings get a full explanation and an LLM call.
+    required: false
+    default: "8"
+  max_snippet_lines:
+    description: Maximum lines of code taken around each finding.
+    required: false
+    default: "30"
+  max_snippet_chars:
+    description: Maximum characters of redacted snippet sent to the LLM.
+    required: false
+    default: "800"
+  llm_batch_size:
+    description: Findings per LLM request.
+    required: false
+    default: "5"
+  llm_max_tokens:
+    description: max_tokens cap for each LLM request.
+    required: false
+    default: "1200"
+  max_files:
+    description: Maximum Terraform and Kubernetes files to scan in one run.
+    required: false
+    default: "100"
+  fail_on:
+    description: >-
+      Fail the job when the highest risk is at or above this level.
+      One of none, low, medium, high, critical.
+    required: false
+    default: none
+  github_token:
+    description: Token used to read changed files and upsert the pull request comment.
+    required: false
+    default: ${{ github.token }}
+  comment:
+    description: Post or update the pull request comment.
+    required: false
+    default: "true"
+
+outputs:
+  findings_count:
+    description: Findings included in the comment.
+  omitted_count:
+    description: Findings dropped because of max_findings.
+  files_scanned:
+    description: Terraform and Kubernetes files that were in scope.
+  highest_severity:
+    description: Highest risk among included findings, or none.
+  used_llm:
+    description: "true when a model produced the explanations."
+  comment_url:
+    description: URL of the created or updated comment, when one was posted.
+
+runs:
+  using: node20
+  main: dist/index.js

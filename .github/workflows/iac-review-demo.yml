@@ -1,0 +1,54 @@
+name: IaC review demo
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: iac-review-demo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Checkov
+        run: pip install 'checkov==3.3.29'
+
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b "$HOME/.local/bin" v0.76.0
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Review the vulnerable sample
+        id: review
+        uses: ./
+        with:
+          scanners: checkov,trivy
+          scan_mode: all
+          paths: examples
+          fail_on: none
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Confirm the sample was flagged
+        run: |
+          test "${{ steps.review.outputs.files_scanned }}" = "3"
+          test "${{ steps.review.outputs.findings_count }}" -gt 0
+          test "${{ steps.review.outputs.highest_severity }}" = "critical"
+          grep -q "IaC AI Reviewer" "$GITHUB_STEP_SUMMARY"
+          if grep -q "AKIAIOSFODNN7EXAMPLE" "$GITHUB_STEP_SUMMARY"; then
+            echo "The dummy access key id was written into the job summary."
+            exit 1
+          fi

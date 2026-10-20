@@ -1,0 +1,27 @@
+name: Feature request
+description: A change to the review, the comment, or a later milestone
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is hard to review today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+    validations:
+      required: true
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: Closest milestone
+      options:
+        - v0.2 signal over noise
+        - v0.3 hosted dashboard
+        - v0.4 Azure DevOps
+        - not sure

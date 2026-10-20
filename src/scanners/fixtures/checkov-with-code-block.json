@@ -1,0 +1,58 @@
+{
+  "check_type": "terraform",
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_AWS_56",
+        "bc_check_id": "BC_AWS_S3_22",
+        "check_name": "Ensure S3 bucket has 'restrict_public_buckets' enabled",
+        "check_result": {
+          "result": "FAILED",
+          "entity": {
+            "api_key": "AKIAIOSFODNN7EXAMPLE"
+          }
+        },
+        "code_block": [
+          [
+            1,
+            "api_key = \"AKIAIOSFODNN7EXAMPLE\"\n"
+          ]
+        ],
+        "file_path": "/open-bucket.tf",
+        "file_abs_path": "/workspace/examples/terraform/open-bucket.tf",
+        "repo_file_path": "/examples/terraform/open-bucket.tf",
+        "file_line_range": [
+          21,
+          27
+        ],
+        "resource": "aws_s3_bucket_public_access_block.logs",
+        "evaluations": null,
+        "check_class": "checkov.terraform.checks.resource.aws.S3RestrictPublicBuckets",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/bc-aws-s3-22",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": "/workspace/examples/terraform/open-bucket.tf"
+      }
+    ]
+  },
+  "summary": {
+    "passed": 5,
+    "failed": 12,
+    "skipped": 0,
+    "parsing_errors": 0,
+    "resource_count": 3,
+    "checkov_version": "3.3.29"
+  }
+}

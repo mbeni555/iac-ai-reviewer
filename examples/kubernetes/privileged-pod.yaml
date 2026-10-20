@@ -1,0 +1,24 @@
+# Deliberately vulnerable sample for IaC AI Reviewer.
+# Do not apply this manifest to a real cluster.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-tools
+  namespace: prod
+spec:
+  hostNetwork: true
+  hostPID: true
+  containers:
+    - name: tools
+      image: busybox:1.36
+      securityContext:
+        privileged: true
+        allowPrivilegeEscalation: true
+        runAsUser: 0
+      volumeMounts:
+        - name: host-root
+          mountPath: /host
+  volumes:
+    - name: host-root
+      hostPath:
+        path: /

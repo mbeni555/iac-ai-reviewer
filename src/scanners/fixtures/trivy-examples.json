@@ -1,0 +1,202 @@
+{
+  "Results": [
+    {
+      "Target": "kubernetes/privileged-pod.yaml",
+      "Misconfigurations": [
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV-0010",
+          "Title": "Access to host PID",
+          "Description": "Sharing the host\u2019s PID namespace allows visibility on host processes, potentially leaking information such as environment variables and configuration.",
+          "Message": "Pod 'debug-tools' should not set 'spec.template.spec.hostPID' to true",
+          "Namespace": "builtin.kubernetes.KSV010",
+          "Resolution": "Do not set 'spec.template.spec.hostPID' to true.",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv-0010",
+          "References": [
+            "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
+            "https://avd.aquasec.com/misconfig/ksv-0010"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 8,
+            "EndLine": 24
+          }
+        },
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV-0017",
+          "Title": "Privileged",
+          "Description": "Privileged containers share namespaces with the host system and do not offer any security. They should be used exclusively for system containers that require high privileges.",
+          "Message": "Container 'tools' of Pod 'debug-tools' should set 'securityContext.privileged' to false",
+          "Namespace": "builtin.kubernetes.KSV017",
+          "Resolution": "Change 'containers[].securityContext.privileged' to 'false'.",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv-0017",
+          "References": [
+            "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
+            "https://avd.aquasec.com/misconfig/ksv-0017"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 12,
+            "EndLine": 20
+          }
+        },
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV-0023",
+          "Title": "hostPath volumes mounted",
+          "Description": "According to pod security standard 'HostPath Volumes', HostPath volumes must be forbidden.",
+          "Message": "Pod 'debug-tools' should not set 'spec.template.volumes.hostPath'",
+          "Namespace": "builtin.kubernetes.KSV023",
+          "Resolution": "Do not set 'spec.volumes[*].hostPath'.",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv-0023",
+          "References": [
+            "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
+            "https://avd.aquasec.com/misconfig/ksv-0023"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 8,
+            "EndLine": 24
+          }
+        }
+      ]
+    },
+    {
+      "Target": "terraform/open-bucket.tf",
+      "Misconfigurations": [
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AWS-0092",
+          "Title": "S3 Buckets not publicly accessible through ACL.",
+          "Description": "Buckets should not have ACLs that allow public access\n",
+          "Message": "Bucket has a public ACL: \"public-read\"",
+          "Namespace": "builtin.aws.s3.aws0092",
+          "Resolution": "Don't use canned ACLs or switch to private acl",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/aws-0092",
+          "References": [
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html",
+            "https://avd.aquasec.com/misconfig/aws-0092"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "aws_s3_bucket_acl.logs",
+            "Provider": "AWS",
+            "Service": "s3",
+            "StartLine": 18,
+            "EndLine": 18,
+            "Occurrences": [
+              {
+                "Resource": "aws_s3_bucket_acl.logs",
+                "Filename": "terraform/open-bucket.tf",
+                "Location": {
+                  "StartLine": 16,
+                  "EndLine": 19
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "Target": "terraform/open-security-group.tf",
+      "Misconfigurations": [
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AWS-0104",
+          "Title": "A security group rule should not allow unrestricted egress to any IP address.",
+          "Description": "Opening up ports to connect out to the public internet is generally to be avoided. You should restrict access to IP addresses or ranges that are explicitly required where possible.\n",
+          "Message": "Security group rule allows unrestricted egress to any IP address.",
+          "Namespace": "builtin.aws.ec2.aws0104",
+          "Resolution": "Set a more restrictive cidr range",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/aws-0104",
+          "References": [
+            "https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/centralized-egress-to-internet.html",
+            "https://avd.aquasec.com/misconfig/aws-0104"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "aws_security_group.web",
+            "Provider": "AWS",
+            "Service": "ec2",
+            "StartLine": 29,
+            "EndLine": 29,
+            "Occurrences": [
+              {
+                "Resource": "egress",
+                "Filename": "terraform/open-security-group.tf",
+                "Location": {
+                  "StartLine": 25,
+                  "EndLine": 30
+                }
+              },
+              {
+                "Resource": "aws_security_group.web",
+                "Filename": "terraform/open-security-group.tf",
+                "Location": {
+                  "StartLine": 4,
+                  "EndLine": 31
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AWS-0107",
+          "Title": "Security groups should not allow unrestricted ingress to SSH or RDP from any IP address.",
+          "Description": "Security groups provide stateful filtering of ingress and egress network traffic to AWS\nresources. It is recommended that no security group allows unrestricted ingress access to\nremote server administration ports, such as SSH to port 22 and RDP to port 3389.\n",
+          "Message": "Security group rule allows unrestricted ingress from any IP address.",
+          "Namespace": "builtin.aws.ec2.aws0107",
+          "Resolution": "Set a more restrictive CIDR range",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/aws-0107",
+          "References": [
+            "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html",
+            "https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-13",
+            "https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-14",
+            "https://avd.aquasec.com/misconfig/aws-0107"
+          ],
+          "Status": "FAIL",
+          "CauseMetadata": {
+            "Resource": "aws_security_group.web",
+            "Provider": "AWS",
+            "Service": "ec2",
+            "StartLine": 14,
+            "EndLine": 14,
+            "Occurrences": [
+              {
+                "Resource": "ingress",
+                "Filename": "terraform/open-security-group.tf",
+                "Location": {
+                  "StartLine": 9,
+                  "EndLine": 15
+                }
+              },
+              {
+                "Resource": "aws_security_group.web",
+                "Filename": "terraform/open-security-group.tf",
+                "Location": {
+                  "StartLine": 4,
+                  "EndLine": 31
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

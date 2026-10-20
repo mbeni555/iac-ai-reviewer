@@ -1,0 +1,40 @@
+[
+  {
+    "check_type": "kubernetes",
+    "results": {
+      "failed_checks": [
+        {
+          "check_id": "CKV_K8S_16",
+          "check_name": "Container should not be privileged",
+          "check_result": { "result": "FAILED" },
+          "file_path": "/privileged-pod.yaml",
+          "file_abs_path": "/workspace/examples/kubernetes/privileged-pod.yaml",
+          "repo_file_path": "/examples/kubernetes/privileged-pod.yaml",
+          "file_line_range": [3, 24],
+          "resource": "Pod.prod.debug-tools",
+          "severity": null,
+          "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-15"
+        }
+      ]
+    }
+  },
+  {
+    "check_type": "terraform",
+    "results": {
+      "failed_checks": [
+        {
+          "check_id": "CKV_AWS_20",
+          "check_name": "S3 Bucket has an ACL defined which allows public READ access.",
+          "check_result": { "result": "FAILED" },
+          "file_abs_path": "/workspace/examples/terraform/open-bucket.tf",
+          "repo_file_path": "/examples/terraform/open-bucket.tf",
+          "file_line_range": [7, 14],
+          "resource": "aws_s3_bucket.logs",
+          "severity": null,
+          "description": null,
+          "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/bc-aws-s3-1"
+        }
+      ]
+    }
+  }
+]

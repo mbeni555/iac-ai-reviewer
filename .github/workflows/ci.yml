@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Checkov
+        run: pip install 'checkov==3.3.29'
+
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b "$HOME/.local/bin" v0.76.0
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Unit and scanner tests
+        run: npm test
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Bundle matches dist/
+        run: |
+          npm run build
+          git diff --exit-code -- dist

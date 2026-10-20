@@ -1,0 +1,40 @@
+name: Bug report
+description: A scanner, ranking, comment, or redaction bug
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: Include the check id, file, and whether an LLM key was set. Do not paste secrets or unredacted snippets.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Action ref
+      placeholder: v0.1.0 or a commit SHA
+  - type: dropdown
+    id: scanner
+    attributes:
+      label: Scanner
+      options:
+        - checkov
+        - trivy
+        - both
+        - not sure
+  - type: dropdown
+    id: llm
+    attributes:
+      label: Was an LLM key configured?
+      options:
+        - "no"
+        - "yes"
+        - "not sure"
